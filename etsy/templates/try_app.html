@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta content="text/html">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Etsy Art Shark</title>
+
+    <!-- {{ url_for('static',filename='style.css')}} -->
+    <!-- Bootstrap Core CSS -->
+    <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+
+    <!-- Custom Fonts -->
+    <link href="{{ url_for('static', filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+
+    <!-- Plugin CSS -->
+    <link href="{{ url_for('static', filename='vendor/magnific-popup/magnific-popup.css') }}" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <!-- <link href="{{ url_for('static', filename='css/creative.min.css') }}" rel="stylesheet"> -->
+    <link href="{{ url_for('static', filename='css/creative.css') }}" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Bokeh -->
+    <link href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.2.min.css" rel="stylesheet" type="text/css">
+    <script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.2.min.js"></script>
+
+</head>
+
+<body id="page-top">
+
+    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">TOP</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">                    
+                    <li>
+                        <a class="page-scroll" href="/index#try">Home</a>
+                    </li>                    
+                    <li>
+                        <a class="page-scroll" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+
+    <section class="bg-primary2" id="result">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-32 col-lg-offset-0 ">                
+
+                    <h2 class="section-heading text-center">
+                        Market value analysis for Etsy listing ID: 
+                        <a target='_blank' href="{{ ''.join(['http://etsy.com/listing/', listing_id]) }}">{{ listing_id }}</a>
+                    </h2>
+                    <hr class="long">                    
+                    
+                    <div id="listing-img-div">                                           
+                        <a target='_blank' style="display: inline" href="{{ ''.join(['http://etsy.com/listing/', listing_id]) }}"><img id="listing-img" src="{{ ''.join(['', imageUrl ]) }}"></a>                                 
+                    </div>
+
+                    <h2 class="section-heading" style="font-size: 20pt; float: left">                                            
+                        &#160;
+                        Listing Price: ${{price}}
+                        &#160;&#160;&#160;&#160;&#160;      
+                        Estimated market value: ${{Y | round| int}}                        
+                    </h2>
+                    <!-- <div id="listing-info">                                
+                        <div style="margin: 5px"> -->
+                        <div style="height:268px;width:70%;border:3px solid #585858; overflow-y: scroll;">
+                        <style scoped contenteditable>/* For the "inset" look only */
+                        /*html {
+                            overflow: auto;
+                        }
+                        body {
+                            position: absolute;
+                            top: 20px;
+                            left: 20px;
+                            bottom: 20px;
+                            right: 20px;
+                            padding: 30px; 
+                            overflow-y: scroll;
+                            overflow-x: hidden;
+                        }*/
+                        /* Let's get this party started */
+                        div::-webkit-scrollbar {
+                            width: 12px;
+                        }                         
+                        /* Track */
+                        div::-webkit-scrollbar-track {
+                            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+                            -webkit-border-radius: 10px;
+                            border-radius: 10px;
+                        }                         
+                        /* Handle */
+                        div::-webkit-scrollbar-thumb {
+                            -webkit-border-radius: 10px;
+                            border-radius: 10px;
+                            /*background: rgba(255,0,0,0.8); */
+                            background: #F05F40;
+                            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+                        }
+                        div::-webkit-scrollbar-thumb:window-inactive {
+                            background: rgba(255,0,0,0.4); 
+
+                            /*background: #222222;*/
+                        }
+                        </style>
+
+                        <p> <b>Title:</b> {{title}} </p>
+                        <p> <b>Description:</b> {{desc}} </p>
+                        <p> <b>Material:</b> {{material}} </p>
+                        <p> <b>Style:</b> {{style}} </p>
+                        <p> <b>Tags:</b> {{tags}} </p>
+                        
+
+                        </div>
+                     
+                    <div id="blue" class="bokeh"> 
+                    <center>                                                  
+                        {{ script | safe }}    
+                        {{ div | safe }}                        
+                        </center>
+                    </div>
+                                        
+                    <div id="blue3">                                        
+                        {% for id, url in tops %}                                                                                                  
+                            <div id = "sim-img-div" class="col-lg-2 col-sm-2" style="float: left;">    
+                                <a target='_blank' style="display: inline;" href="{{ ''.join(['http://etsy.com/listing/', id]) }}"><img id="sim-img" src="{{ ''.join(['', url ]) }}"></a>                                 
+                            </div>                            
+                        {% endfor %}                    
+                    </div>
+
+                    </div>
+                    
+
+
+
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+    <section id="contact" class="bg-primary2">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <h2 class="section-heading">Contact</h2>
+                    <hr class="long">                    
+                </div>
+                <div class="col-lg-3 text-center">                    
+                    <i class="fa fa-phone fa-3x sr-contact"></i>
+                    <p>+1 (917) 635-6808</p>
+                </div>
+                <div class="col-lg-3 text-center">                    
+                    <i class="fa fa-envelope-o fa-3x sr-contact"></i>                     
+                    <p><a href="mailto:chang.rockson@gmail.com">chang.rockson@gmail.com</a></p>
+                </div>
+                </br>
+                <div class="col-lg-3 text-center">                    
+                    <i class="fa fa-linkedin-square fa-3x sr-contact"></i>
+                    <p><a href="linkedin.com/in/rockson-chang">linkedin.com/in/rockson-chang</a></p>
+                </div>
+                <div class="col-lg-3 text-center">                                    
+                    <i class="fa fa-home fa-3x sr-contact"></i>
+                    <p><a href="rocksonchang.github.io">rocksonchang.github.io</a></p>                
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- jQuery -->
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="vendor/scrollreveal/scrollreveal.min.js"></script>
+    <script src="vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
+
+    <!-- Theme JavaScript -->
+    <script src="{{ url_for('static', filename='js/creative.min.js') }}"></script>
+
+</body>
+
+</html>
