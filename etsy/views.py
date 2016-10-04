@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import pickle
 from random import randint
+from scipy.special import erf
 
 #import requests
 import os
@@ -117,11 +118,21 @@ def gen_demoListings():
   df = load_df() 
   demo_ids=[]
   demo_urls=[]
+
+  ## fill list with randomly pulled samples from testing set
   for i in range(9):    
     demo_id = int(test_ids[  randint(0, len(test_ids))  ])
     price, title, description, materials, tags, styles, out, urlMed, urlLarge = extract_raw_data(df,demo_id)
     demo_ids.append(demo_id)
     demo_urls.append(urlLarge)
+
+  ## to ensure something close to the norm for my presentation, prepare a few curated selections
+  curated_ids = [124386444, 229795748, 256569756, 246713718, 463098088, 462750562, 241235302, 66770733]
+  demo_id = int(curated_ids[  randint(0, len(curated_ids))  ])
+  price, title, description, materials, tags, styles, out, urlMed, urlLarge = extract_raw_data(df,demo_id)
+  demo_ids[4]=demo_id
+  demo_urls[4]=urlLarge
+
   return demo_ids, demo_urls
 
 ###############################################################################
@@ -223,7 +234,7 @@ def predict(df, id, out):
 
 def generateBokeh1(Y, top_ids, top_prices, price, listing_id): 
   print ('Generating Bokeh ...')
-  p = figure(plot_height=220, plot_width=1000, background_fill_color="#ffffff",x_axis_location="above")
+  p = figure(plot_height=220, plot_width=1000, background_fill_color="#ffffff",x_axis_location="above",)
   
   mu, sigma = Y, 0.3*Y  
   y_price = 1/(sigma * np.sqrt(2*np.pi)) * np.exp(-(price-mu)**2 / (2*sigma**2))
@@ -234,11 +245,11 @@ def generateBokeh1(Y, top_ids, top_prices, price, listing_id):
 
   color2,x2,pdf2 = [],[],[]
   for i in range(int(N)):
-
-    # color=(float(i)/N*255, 0,(1.-float(i)/N)*255)
-    c1 = 255 * np.exp(-(i-N/2)**2 / (2*(L/sigma)**2))
+    
+    #c1 = 255 * np.exp(-(i-N/2)**2 / (2*(L/sigma)**2))
+    c1 = 255*(N-i)/N
     c2 = 255-c1
-    color=(c1, 0, c2)  
+    color=(c2, 125, c1)  
 
     x = np.linspace(-L+(i)*dL, -L+(i+1)*dL, 200)+mu
     pdf = 1/(sigma * np.sqrt(2*np.pi)) * np.exp(-(x-mu)**2 / (2*sigma**2))
@@ -250,7 +261,7 @@ def generateBokeh1(Y, top_ids, top_prices, price, listing_id):
     x2.append(x)
     pdf2.append(pdf)
 
-  p.patches(xs=x2, ys=pdf2, color=color2, alpha=0.25, line_alpha=0)
+  p.patches(xs=x2, ys=pdf2, color=color2, alpha=0.6, line_alpha=0)
   p.set(x_range=Range1d(mu-5*sigma, mu+5*sigma), y_range=Range1d(0, h))  
   p.xaxis.axis_label = 'Price'
   
@@ -258,11 +269,11 @@ def generateBokeh1(Y, top_ids, top_prices, price, listing_id):
     top_price_y = 1/(sigma * np.sqrt(2*np.pi)) * np.exp(-(top_price-mu)**2 / (2*sigma**2))
     p.circle(x=top_price, y=top_price_y, size=20,color='green', alpha=0.5, line_alpha=0.5)      
     p.line(x=[top_price,top_price], y=[0,top_price_y], color='green', alpha=0.5, line_width=5)        
-  p.triangle(x=price, y=y_price, size=20,color='#F05F40', line_alpha=0.5)        
-  p.inverted_triangle(x=price, y=y_price, size=20,color='#F05F40', line_alpha=0.5)        
+  p.triangle(x=price, y=y_price, size=20,color='red', line_alpha=0.8)        
+  p.inverted_triangle(x=price, y=y_price, size=20,color='red', line_alpha=0.8)        
   p.yaxis.visible = False  
   
-  p.line(x=[price,price], y=[0,1], color='#F05F40', line_alpha=0.3, line_width=5)        
+  p.line(x=[price,price], y=[0,1], color='#F05F40', line_alpha=0.5, line_width=5)        
 
   p.triangle(x=Y, y=0.94*h, size=20,color='#212121', alpha=1)        
   p.line(x=[Y,Y], y=[0,0.94], color='#212121', line_alpha=1, line_width=3)       
@@ -271,12 +282,16 @@ def generateBokeh1(Y, top_ids, top_prices, price, listing_id):
   p.logo = None
   p.toolbar_location = None
   p.ygrid.grid_line_color = None
+  p.xaxis.axis_label_text_font_size = "16pt"
+
 
   rge=[mu-5*sigma, mu+5*sigma]
   drge=(rge[1]-rge[0])/(6-1.)
 
-  mytext1 = Label(x=mu+3*sigma, y=0.5*h, text='Above market value')
-  mytext2 = Label(x=mu-4*sigma, y=0.5*h, text='Below market value')
+  alpha = 0.50+0.35*erf((price-Y)/sigma)
+  print alpha, 1-alpha
+  mytext1 = Label(x=mu+2.5*sigma, y=0.8*h, text='Above market value', text_font_size='20pt', text_alpha=alpha)
+  mytext2 = Label(x=mu-4.5*sigma, y=0.8*h, text='Below market value', text_font_size='20pt', text_alpha=1-alpha)
 
   p.add_layout(mytext1)
   p.add_layout(mytext2)
@@ -288,9 +303,12 @@ def generateBokeh1(Y, top_ids, top_prices, price, listing_id):
   color2,x2,pdf2 = [],[],[]
   for i in range(int(N)):
     
-    c1 = 255 * np.exp(-(i-N/2)**2 / (2*(L/sigma)**2))
+    # c1 = 255 * np.exp(-(i-N/2)**2 / (2*(L/sigma)**2))    
+    # c2 = 255-c1
+    # color=(c1, 0, c2)  
+    c1 = 255*(N-i)/N
     c2 = 255-c1
-    color=(c1, 0, c2)  
+    color=(c2, 125, c1)  
 
     x = np.linspace(-L+(i)*dL, -L+(i+1)*dL, 200)+mu
     pdf = x*0 +1
@@ -302,7 +320,7 @@ def generateBokeh1(Y, top_ids, top_prices, price, listing_id):
     x2.append(x)
     pdf2.append(pdf)
  
-  p2.patches(xs=x2, ys=pdf2, color=color2, alpha=0.25, line_alpha=0)
+  p2.patches(xs=x2, ys=pdf2, color=color2, alpha=0.6, line_alpha=0)
   p2.set(x_range=Range1d(mu-5*sigma, mu+5*sigma), y_range=Range1d(0, 1))  
   p2.xaxis.axis_label = 'Price'
   p2.yaxis.visible = False    
@@ -313,6 +331,7 @@ def generateBokeh1(Y, top_ids, top_prices, price, listing_id):
     top_price_y = 1
     p2.line(x=[top_price, top_price], y=[0.3,1], color='#266d6d', line_alpha=0.5, line_width=4)      
     p2.line(x=[ipos, top_price], y=[0,0.3], color='#266d6d', line_alpha=0.5, line_width=4)      
+    #p2.circle(x=ipos, y=0, size=20,color='green', alpha=0.5, line_alpha=0.5)      
   #p2.line(x=[price,price], y=[0,1], color='red', line_alpha=0.5, line_width=8)        
   #p2.line(x=[Y,Y], y=[0,1], color='black', line_alpha=0.5, line_width=8)        
   
